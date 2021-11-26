@@ -40,12 +40,26 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  int _currentIndex = 0;
+  late List<Widget> _pages;
+  late PageController _pageController;
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+  @override
+  void initState() {
+    super.initState();
+
+    _pageController = PageController(initialPage: _currentIndex);
+    _pages = [
+      Container(
+        color: Colors.red,
+      ),
+      Container(
+        color: Colors.yellow,
+      ),
+      Container(
+        color: Colors.blue,
+      ),
+    ];
   }
 
   @override
@@ -53,26 +67,87 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: <Widget>[
+          IconButton(
+              icon: Icon(
+                Icons.search,
+              ),
+              onPressed: () {}),
+          IconButton(
+            icon: Icon(
+              Icons.feedback,
+            ),
+            onPressed: () {},
+          ),
+        ],
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          _pageController.animateToPage(index,
+              duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
+        },
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.play_circle_outline,
+            ),
+            label: '播放',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.edit,
+            ),
+            label: '编辑',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.account_box,
+            ),
+            label: '我的',
+          ),
+        ],
+      ),
+      drawer: Drawer(
+        child: ListView(
           children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.indigo,
+              ),
+              child: Center(
+                child: SizedBox(
+                  width: 60.0,
+                  height: 60.0,
+                  child: CircleAvatar(
+                    child: Text('Flutter'),
+                  ),
+                ),
+              ),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
+            ListTile(
+              leading: Icon(Icons.settings),
+              title: Text('设置'),
+              onTap: () {},
+            )
           ],
         ),
       ),
+      body: PageView.builder(
+        itemBuilder: (BuildContext context, int index) {
+          return _pages[index];
+        },
+        controller: _pageController,
+        itemCount: _pages.length,
+        onPageChanged: (int index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+      ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
+        onPressed: () {},
+        tooltip: 'Add',
         child: Icon(Icons.add),
       ),
     );
